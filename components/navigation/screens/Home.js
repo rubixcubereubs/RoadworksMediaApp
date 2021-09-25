@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   View,
@@ -12,24 +12,6 @@ import {
 } from 'react-native';
 import {ListItem, Icon, Button} from 'react-native-elements';
 import {Avatar, Card, Title, Paragraph} from 'react-native-paper';
-
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-    link: 'View All',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-    link: 'View All',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-    link: 'View All',
-  },
-];
 
 const LeftContent = props => <Avatar.Icon {...props} icon="download" />;
 
@@ -47,6 +29,84 @@ const Item = ({title}) => (
 );
 
 const Home = ({navigation}) => {
+  const [podcastsError, setPodcastsError] = useState(null);
+  const [podcastsLoaded, setPodcastsLoaded] = useState(false);
+  const [podcasts, setPodcasts] = useState([]);
+
+  const localhost = 'http://192.168.1.225:8080';
+  const api = 'https://roadworksmediabackend.herokuapp.com';
+  useEffect(() => {
+    fetch(`${api}/albums`)
+      .then(res => {
+        return res.json();
+      })
+      .then(
+        result => {
+          setPodcastsLoaded(true);
+          setPodcasts(result);
+          console.log('api', JSON.stringify(result));
+        },
+
+        error => {
+          setPodcastsLoaded(true);
+          setPodcastsError(error);
+          console.log('error: ', error);
+        },
+      );
+  }, []);
+  const WholeNews = () => {
+    return Object.entries(podcasts).map(([key, value]) => {
+      return [
+        {
+          key: key,
+          id: value.id,
+          title: value.name,
+        },
+      ];
+    });
+  };
+  const DATA = [
+    {
+      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+      title: 'First One',
+    },
+    {
+      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+      title: 'Second One',
+    },
+    {
+      id: '58694a0f-3da1-471f-bd96-145571e29d72',
+      title: 'Third One',
+    },
+  ];
+  const DATA1 = [
+    {
+      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28b',
+      title: 'First One',
+    },
+    {
+      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f6',
+      title: 'Second One',
+    },
+    {
+      id: '58694a0f-3da1-471f-bd96-145571e29d7',
+      title: 'Third One',
+    },
+  ];
+  const DATA2 = [
+    {
+      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28',
+      title: 'First One',
+    },
+    {
+      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f',
+      title: 'Second One',
+    },
+    {
+      id: '58694a0f-3da1-471f-bd96-145571e29d',
+      title: 'Third One',
+    },
+  ];
   const renderItem = ({item}) => <Item title={item.title} />;
   return (
     <SafeAreaView style={styles.container}>
@@ -68,7 +128,14 @@ const Home = ({navigation}) => {
             color: 'white',
           }}
           title="Podcasts"
-          onPress={() => navigation.navigate('Podcasts')}
+          onPress={() =>
+            navigation.navigate('Podcasts', {
+              podcasts: podcasts,
+              DATA: DATA,
+              DATA1: DATA1,
+              DATA2: DATA2,
+            })
+          }
           //raised
           buttonStyle={styles.button}
           containerStyle={styles.buttonContainer}

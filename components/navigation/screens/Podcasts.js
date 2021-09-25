@@ -54,14 +54,31 @@ const DATA2 = [
   },
 ];
 
-const Item = ({item, onPress, backgroundColor, textColor}) => (
-  <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-    <Text style={[styles.title, textColor]}>{item.title}</Text>
-  </TouchableOpacity>
-);
-
-const Podcasts = ({navigation}) => {
+const Podcasts = ({navigation, route}) => {
   const [selectedId, setSelectedId] = useState(null);
+  const [DATA, DATA1, DATA2, podcasts] = [
+    route.params.DATA[0],
+    route.params.DATA[1],
+    route.params.DATA[2],
+    route.params.podcasts,
+  ];
+  console.log('podcasts', podcasts);
+  const Item = ({item, onPress, backgroundColor, textColor}) => {
+    return Object.entries(podcasts).map(([key, value]) => {
+      return (
+        <TouchableOpacity
+          key={key}
+          onPress={onPress}
+          style={[styles.item, backgroundColor]}>
+          <Text key={key} style={[styles.title, textColor]}>
+            {value.name}
+          </Text>
+        </TouchableOpacity>
+      );
+    });
+  };
+
+  const list = [podcasts];
 
   const renderItem = ({item}) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
@@ -85,7 +102,7 @@ const Podcasts = ({navigation}) => {
         <View style={styles.subContainer}>
           <Text>Latest Podcasts</Text>
           <FlatList
-            data={DATA}
+            data={list}
             renderItem={renderItem}
             keyExtractor={item => item.id}
             extraData={selectedId}
@@ -98,7 +115,7 @@ const Podcasts = ({navigation}) => {
         <View style={styles.albumList}>
           <Text>Entertainment Podcasts</Text>
           <FlatList
-            data={DATA1}
+            data={list}
             renderItem={renderItem}
             keyExtractor={item => item.id}
             extraData={selectedId}
@@ -111,7 +128,7 @@ const Podcasts = ({navigation}) => {
         <View>
           <Text>Educational Podcasts</Text>
           <FlatList
-            data={DATA2}
+            data={list}
             renderItem={renderItem}
             keyExtractor={item => item.id}
             extraData={selectedId}

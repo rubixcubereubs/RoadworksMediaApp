@@ -31,6 +31,7 @@ const Item = ({title}) => (
 const Home = ({navigation}) => {
   const [podcastsError, setPodcastsError] = useState(null);
   const [podcastsLoaded, setPodcastsLoaded] = useState(false);
+  const [tracks, setTracks] = useState();
   const [podcasts, setPodcasts] = useState([]);
 
   const localhost = 'http://192.168.1.225:8080';
@@ -44,7 +45,7 @@ const Home = ({navigation}) => {
         result => {
           setPodcastsLoaded(true);
           setPodcasts(result);
-          console.log('api', JSON.stringify(result));
+          console.log('api', result);
         },
 
         error => {

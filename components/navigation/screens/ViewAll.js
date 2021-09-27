@@ -32,7 +32,7 @@ const ViewAll = () => {
   const localhost = 'http://192.168.1.225:8080';
   const api = 'https://roadworksmediabackend.herokuapp.com';
   useEffect(() => {
-    fetch(`${api}/podcasts`)
+    fetch(`${api}/albums`)
       .then(res => {
         return res.json();
       })
@@ -163,7 +163,7 @@ const ViewAll = () => {
     <ListItem.Title>{podcast.name}</ListItem.Title>;
   });*/
 
-  const WholeNews = () => {
+  const ShowAllPodcasts = () => {
     return Object.entries(podcasts).map(([key, value]) => {
       return (
         <ScrollView key={key}>
@@ -175,9 +175,10 @@ const ViewAll = () => {
               onPress={checkPermission}
             />
             <Avatar source={{uri: value.image}} />
-            <ListItem.Content>
+            <ListItem.Content key={value.id}>
               <ListItem.Title>{value.name}</ListItem.Title>
-              <ListItem.Subtitle>{value.filePath}</ListItem.Subtitle>
+              <ListItem.Subtitle>{value.artist}</ListItem.Subtitle>
+              <ListItem.Subtitle>{value.album}</ListItem.Subtitle>
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem>
@@ -219,7 +220,7 @@ const ViewAll = () => {
         <FlatList
           keyExtractor={keyExtractor}
           data={list}
-          renderItem={WholeNews}
+          renderItem={ShowAllPodcasts}
           ListHeaderComponent={() =>
             !list.length ? (
               <Text style={styles.emptyMessageStyle}>The list is empty</Text>

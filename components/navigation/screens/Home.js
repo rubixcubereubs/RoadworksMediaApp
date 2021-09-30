@@ -31,7 +31,6 @@ const Item = ({title}) => (
 const Home = ({navigation}) => {
   const [podcastsError, setPodcastsError] = useState(null);
   const [podcastsLoaded, setPodcastsLoaded] = useState(false);
-  const [tracks, setTracks] = useState();
   const [podcasts, setPodcasts] = useState([]);
 
   const localhost = 'http://192.168.1.225:8080';
@@ -51,6 +50,30 @@ const Home = ({navigation}) => {
         error => {
           setPodcastsLoaded(true);
           setPodcastsError(error);
+          console.log('error: ', error);
+        },
+      );
+  }, []);
+
+  const [tracks, setTracks] = useState();
+  const [tracksError, setTracksError] = useState(null);
+  const [tracksLoaded, setTracksLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch(`${api}/podcasts`)
+      .then(res => {
+        return res.json();
+      })
+      .then(
+        result => {
+          setTracksLoaded(true);
+          setTracks(result);
+          console.log('api', result);
+        },
+
+        error => {
+          setTracksLoaded(true);
+          setTracksError(error);
           console.log('error: ', error);
         },
       );

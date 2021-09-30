@@ -58,6 +58,8 @@ const DATA2 = [
 const Podcasts = ({navigation, route}) => {
   const [selectedId, setSelectedId] = useState(null);
   const [tracks, setTracks] = useState([]);
+  const [educationAlbums, setEducationAlbums] = useState([]);
+  const [entertainmentAlbums, setEntertainmentAlbums] = useState([]);
   const [podcasts] = [route.params.podcasts];
 
   const latestPodcasts = Object.entries(podcasts).map(([key, value]) => ({
@@ -114,12 +116,17 @@ const Podcasts = ({navigation, route}) => {
   );
   const renderItem = ({item}) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
-    const color = item.id === selectedId ? 'white' : 'black';
+    const color = item.id === selectedId ? 'red' : 'black';
 
     return (
       <Item
         item={item}
-        onPress={() => setSelectedId(item.id)}
+        onPress={() =>
+          navigation.navigate('Album', {
+            item: item,
+            podcasts: podcasts,
+          })
+        }
         backgroundColor={{backgroundColor}}
         textColor={{color}}
       />
@@ -128,27 +135,39 @@ const Podcasts = ({navigation, route}) => {
 
   const renderEntItem = ({item}) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
-    const color = item.id === selectedId ? 'white' : 'black';
+    const color = item.id === selectedId ? 'red' : 'black';
     if (item.tag == 'ent') {
+      //setEntertainmentAlbums([...entertainmentAlbums, item]);
+
       return (
         <Item
           item={item}
-          onPress={() => setSelectedId(item.id)}
+          onPress={() =>
+            navigation.navigate('Album', {
+              item: item,
+              podcasts: podcasts,
+            })
+          }
           backgroundColor={{backgroundColor}}
           textColor={{color}}
         />
       );
     }
   };
-
+  console.log('ent: ', entertainmentAlbums);
   const renderEduItem = ({item}) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
-    const color = item.id === selectedId ? 'white' : 'black';
+    const color = item.id === selectedId ? 'red' : 'black';
     if (item.tag == 'edu') {
       return (
         <Item
           item={item}
-          onPress={() => setSelectedId(item.id)}
+          onPress={() =>
+            navigation.navigate('Album', {
+              item: item,
+              podcasts: podcasts,
+            })
+          }
           backgroundColor={{backgroundColor}}
           textColor={{color}}
         />

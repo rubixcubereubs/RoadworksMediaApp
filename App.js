@@ -23,6 +23,7 @@ import ViewAll from './components/navigation/screens/ViewAll';
 import Podcasts from './components/navigation/screens/Podcasts';
 import AlbumInfo from './components/navigation/screens/AlbumInfo';
 import OnboardingScreen from './components/navigation/screens/onboarding';
+import EntPods from './components/navigation/screens/EntertainmentPodcasts';
 //import Test from './components/navigation/screens/test';
 
 const Stack = createNativeStackNavigator();
@@ -41,6 +42,11 @@ const App = () => {
           component={Home}
         />
         <Stack.Screen name="View All" component={ViewAll} />
+        <Stack.Screen
+          name="Entertainment"
+          component={EntPods}
+          options={({route}) => ({title: route.params.genre})}
+        />
         <Stack.Screen name="Podcasts" component={Podcasts} />
         <Stack.Screen
           name="Album"

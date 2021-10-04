@@ -12,6 +12,7 @@ import {
   Image,
 } from 'react-native';
 import {Surface} from 'react-native-paper';
+import {Button} from 'react-native-elements';
 const DATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -63,19 +64,25 @@ const Podcasts = ({navigation, route}) => {
   const [podcasts] = [route.params.podcasts];
 
   const latestPodcasts = Object.entries(podcasts).map(([key, value]) => ({
-    title: value.name,
+    name: value.name,
+    artist: value.artist,
+    image: value.image,
     id: value.id,
     tracks: value.tracks,
     tag: value.tags,
   }));
   const entPodcasts = Object.entries(podcasts).map(([key, value]) => ({
-    title: value.name,
+    name: value.name,
+    artist: value.artist,
+    image: value.image,
     id: value.id + value.tags,
     tracks: value.tracks,
     tag: value.tags,
   }));
   const eduPodcasts = Object.entries(podcasts).map(([key, value]) => ({
-    title: value.name,
+    name: value.name,
+    artist: value.artist,
+    image: value.image,
     id: value.id + value.tags,
     tracks: value.tracks,
     tag: value.tags,
@@ -110,7 +117,7 @@ const Podcasts = ({navigation, route}) => {
   const Item = ({item, onPress, backgroundColor, textColor}) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
       <Surface style={{padding: 20}}>
-        <Text style={[styles.title, textColor]}>{item.title}</Text>
+        <Text style={[styles.title, textColor]}>{item.name}</Text>
       </Surface>
     </TouchableOpacity>
   );
@@ -186,27 +193,6 @@ const Podcasts = ({navigation, route}) => {
       <Text>{track}</Text>
     </>
   );
-  console.log('sel', selectedId);
-  const skull = podcasts.map(i => i.tracks);
-
-  const hand = podcasts.map(i => i.tracks.map(t => t));
-
-  const arm = Object.values(hand);
-  const leg = arm.map(ar => ar);
-
-  var values = Object.keys(hand).map(function (e) {
-    return hand[e];
-  });
-
-  //const tired = () =>()
-
-  const dr = () => {
-    podcasts.map(item =>
-      Object.keys(item.tracks).map(index => {
-        return item.tracks[index].name;
-      }),
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -233,9 +219,13 @@ const Podcasts = ({navigation, route}) => {
               horizontal
             />
           </SafeAreaView>
-          <TouchableOpacity onPress={() => navigation.navigate('View All')}>
-            <Text>View All</Text>
-          </TouchableOpacity>
+
+          <Button
+            title="View All"
+            type="clear"
+            raised
+            onPress={() => navigation.navigate('View All')}
+          />
         </View>
         <View style={styles.albumList}>
           <Text>Entertainment Podcasts</Text>
@@ -248,9 +238,18 @@ const Podcasts = ({navigation, route}) => {
               horizontal
             />
           </SafeAreaView>
-          <TouchableOpacity onPress={() => navigation.navigate('View All')}>
-            <Text>View All</Text>
-          </TouchableOpacity>
+          <Button
+            title="View All"
+            type="clear"
+            raised
+            onPress={() =>
+              navigation.navigate('Entertainment', {
+                albums: podcasts,
+                albumType: 'ent',
+                genre: 'Entertainment',
+              })
+            }
+          />
         </View>
         <View>
           <Text>Educational Podcasts</Text>
@@ -263,57 +262,19 @@ const Podcasts = ({navigation, route}) => {
               horizontal
             />
           </SafeAreaView>
-          <TouchableOpacity onPress={() => navigation.navigate('View All')}>
-            <Text>View All</Text>
-          </TouchableOpacity>
-        </View>
-        {podcasts.map(latest => {
-          return (
-            <Album
-              key={latest.id}
-              id={`Album ID: ${latest.id}`}
-              albumName={`Album Name: ${latest.name}`}
-              artist={`Artist: ${latest.artist}`}
-              tags={`Tags: ${latest.tags}`}
-              image={`Image: ${latest.image}`}
-              track={latest.tracks.map((track, i) => (
-                <>
-                  <Text>
-                    Track {i + 1}: {track.name}
-                    {'\n'}
-                  </Text>
-                  <Text>
-                    artist: {track.artist}
-                    {'\n'}
-                  </Text>
-                  <Text>
-                    albumID: {track.albumId}
-                    {'\n'}
-                  </Text>
-                </>
-              ))}
-            />
-          );
-        })}
-        <SafeAreaView style={styles.item}>
-          <FlatList
-            horizontal
-            data={podcasts}
-            renderItem={({item, index}) => (
-              <View>
-                <TouchableOpacity style={styles.item}>
-                  {item.tracks.map((track, i) => (
-                    <>
-                      <Text>{track.name}</Text>
-
-                      <Text>{track.artist}</Text>
-                    </>
-                  ))}
-                </TouchableOpacity>
-              </View>
-            )}
+          <Button
+            title="View All"
+            type="clear"
+            raised
+            onPress={() =>
+              navigation.navigate('Entertainment', {
+                albums: podcasts,
+                albumType: 'edu',
+                genre: 'Education',
+              })
+            }
           />
-        </SafeAreaView>
+        </View>
       </ScrollView>
     </View>
   );
@@ -339,7 +300,7 @@ const styles = StyleSheet.create({
   },
   surface: {
     padding: 8,
-    height: 200,
+    height: 150,
     //width: 80,
     alignItems: 'center',
     justifyContent: 'center',

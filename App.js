@@ -51,7 +51,7 @@ const App = () => {
         <Stack.Screen
           name="Album"
           component={AlbumInfo}
-          options={({route}) => ({title: route.params.item.title})}
+          options={({route}) => ({title: route.params.item.name})}
         />
       </Stack.Navigator>
     </NavigationContainer>

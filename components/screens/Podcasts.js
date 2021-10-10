@@ -1,18 +1,19 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   View,
   FlatList,
   StyleSheet,
   Text,
-  StatusBar,
   ScrollView,
   TouchableOpacity,
-  VirtualizedList,
-  Image,
+  ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import {Surface} from 'react-native-paper';
 import {Button} from 'react-native-elements';
+import AudioPlayer from './AudioPlayer';
+
 const DATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -61,8 +62,32 @@ const Podcasts = ({navigation, route}) => {
   const [tracks, setTracks] = useState([]);
   const [educationAlbums, setEducationAlbums] = useState([]);
   const [entertainmentAlbums, setEntertainmentAlbums] = useState([]);
-  const [podcasts] = [route.params.podcasts];
+  //const [podcasts] = [route.params.podcasts];
+  const [podcastsError, setPodcastsError] = useState(null);
+  const [podcastsLoaded, setPodcastsLoaded] = useState(false);
+  const [podcasts, setPodcasts] = useState([]);
 
+  const localhost = 'http://192.168.1.225:8080';
+  const api = 'https://roadworksmediabackend.herokuapp.com';
+  useEffect(() => {
+    fetch(`${api}/albums`)
+      .then(res => {
+        return res.json();
+      })
+      .then(
+        result => {
+          setPodcastsLoaded(true);
+          setPodcasts(result);
+          console.log('api', result);
+        },
+
+        error => {
+          setPodcastsLoaded(true);
+          setPodcastsError(error);
+          console.log('error: ', error);
+        },
+      );
+  }, []);
   const latestPodcasts = Object.entries(podcasts).map(([key, value]) => ({
     name: value.name,
     artist: value.artist,
@@ -196,86 +221,96 @@ const Podcasts = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      <Surface style={styles.surface}>
-        {latestPodcasts.map(latest => (
-          <Text style={styles.surfaceText}>
-            {latest.tracks.map((track, i) => (
-              <Text style={styles.surfaceText}>{track.name}</Text>
-            ))}
-          </Text>
-        ))}
-      </Surface>
-      <ScrollView>
-        <View style={styles.subContainer}>
-          <Text>Latest Podcasts</Text>
-          <SafeAreaView style={styles.container}>
-            <FlatList
-              data={latestPodcasts.slice(0, latestPodcasts.length / 3)}
-              renderItem={renderItem}
-              keyExtractor={item => item.id}
-              extraData={selectedId}
-              initialNumToRender={2}
-              maxToRenderPerBatch={4}
-              horizontal
-            />
-          </SafeAreaView>
-
-          <Button
-            title="View All"
-            type="clear"
-            raised
-            onPress={() => navigation.navigate('View All')}
-          />
-        </View>
-        <View style={styles.albumList}>
-          <Text>Entertainment Podcasts</Text>
-          <SafeAreaView style={styles.container}>
-            <FlatList
-              data={entPodcasts.slice(0, latestPodcasts.length / 2)}
-              renderItem={renderEntItem}
-              keyExtractor={item => item.id}
-              extraData={selectedId}
-              horizontal
-            />
-          </SafeAreaView>
-          <Button
-            title="View All"
-            type="clear"
-            raised
-            onPress={() =>
-              navigation.navigate('Entertainment', {
-                albums: podcasts,
-                albumType: 'ent',
-                genre: 'Entertainment',
-              })
-            }
-          />
-        </View>
+      {StatusBar.setBarStyle('light-content')}
+      {podcastsLoaded ? (
         <View>
-          <Text>Educational Podcasts</Text>
-          <SafeAreaView style={styles.container}>
-            <FlatList
-              data={eduPodcasts.slice(0, latestPodcasts.length / 2)}
-              renderItem={renderEduItem}
-              keyExtractor={item => item.id}
-              extraData={selectedId}
-              horizontal
-            />
-          </SafeAreaView>
-          <Button
-            title="View All"
-            type="clear"
-            raised
-            onPress={() =>
-              navigation.navigate('Entertainment', {
-                albums: podcasts,
-                albumType: 'edu',
-                genre: 'Education',
-              })
-            }
-          />
+          <Surface style={styles.surface}>
+            {latestPodcasts.map(latest => (
+              <Text style={styles.surfaceText}>
+                {latest.tracks.map((track, i) => (
+                  <Text style={styles.surfaceText}>{track.name}</Text>
+                ))}
+              </Text>
+            ))}
+          </Surface>
+          <ScrollView>
+            <View style={styles.subContainer}>
+              <Text style={styles.albumListTitle}>Latest Podcasts</Text>
+              <SafeAreaView style={styles.container}>
+                <FlatList
+                  data={latestPodcasts.slice(0, latestPodcasts.length / 3)}
+                  renderItem={renderItem}
+                  keyExtractor={item => item.id}
+                  extraData={selectedId}
+                  initialNumToRender={2}
+                  maxToRenderPerBatch={4}
+                  horizontal
+                />
+              </SafeAreaView>
+
+              <Button
+                title="View All"
+                type="clear"
+                raised
+                onPress={() => navigation.navigate('View All')}
+              />
+            </View>
+            <View style={styles.albumList}>
+              <Text style={styles.albumListTitle}>Entertainment Podcasts</Text>
+              <SafeAreaView style={styles.container}>
+                <FlatList
+                  data={entPodcasts.slice(0, latestPodcasts.length / 2)}
+                  renderItem={renderEntItem}
+                  keyExtractor={item => item.id}
+                  extraData={selectedId}
+                  horizontal
+                />
+              </SafeAreaView>
+              <Button
+                title="View All"
+                type="clear"
+                raised
+                onPress={() =>
+                  navigation.navigate('Entertainment', {
+                    albums: podcasts,
+                    albumType: 'ent',
+                    genre: 'Entertainment',
+                  })
+                }
+              />
+            </View>
+            <View>
+              <Text style={styles.albumListTitle}>Educational Podcasts</Text>
+              <SafeAreaView style={styles.container}>
+                <FlatList
+                  data={eduPodcasts.slice(0, latestPodcasts.length / 2)}
+                  renderItem={renderEduItem}
+                  keyExtractor={item => item.id}
+                  extraData={selectedId}
+                  horizontal
+                />
+              </SafeAreaView>
+              <Button
+                title="View All"
+                type="clear"
+                raised
+                onPress={() =>
+                  navigation.navigate('Entertainment', {
+                    albums: podcasts,
+                    albumType: 'edu',
+                    genre: 'Education',
+                  })
+                }
+              />
+            </View>
+          </ScrollView>
         </View>
-      </ScrollView>
+      ) : (
+        <View>
+          <ActivityIndicator size="large" />
+          <Text style={{color: 'white'}}>Loading Podcasts</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -300,19 +335,42 @@ const styles = StyleSheet.create({
   },
   surface: {
     padding: 8,
-    height: 150,
+    height: 50,
     //width: 80,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 12,
-    backgroundColor: 'black',
+    backgroundColor: 'white',
+    overflow: 'hidden',
+    borderBottomWidth: 1,
+    //borderTopWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'white',
+  },
+  surfaceBottom: {
+    padding: 8,
+    height: 100,
+    //width: 80,
+    //alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 12,
+    //backgroundColor: 'black',
+    overflow: 'hidden',
+    flex: 1,
+    // flexDirection: 'row',
+    // flexWrap: 'wrap',
+    // alignItems: 'flex-start',
   },
   surfaceText: {
     color: 'red',
+    width: '33%',
   },
   albumList: {
     marginTop: 10,
     marginBottom: 10,
+  },
+  albumListTitle: {
+    color: 'white',
   },
   lists: {
     margin: 10,

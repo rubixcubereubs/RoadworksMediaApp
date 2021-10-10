@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {Surface} from 'react-native-paper';
 import {ListItem, Avatar, Image} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const AlbumInfo = ({route, useState, useEffect}) => {
   const [item] = [route.params.item];
@@ -41,12 +42,20 @@ const AlbumInfo = ({route, useState, useEffect}) => {
     <View>
       <Surface style={styles.surface}>
         <Image
-          source={require(`../../../media/images/circle.jpg`)}
+          source={require(`../../media/images/circle.jpg`)}
           style={{width: 390, height: 300}}
           PlaceholderContent={<ActivityIndicator />}>
           <Text>{item.name}</Text>
           <Text>{item.artist}</Text>
           <Text>{item.image}</Text>
+          <TouchableOpacity>
+            <Icon
+              name="ios-cloud-download-outline"
+              size={30}
+              color="white"
+              style={styles.seekButtons}
+            />
+          </TouchableOpacity>
         </Image>
       </Surface>
       <FlatList

@@ -18,12 +18,15 @@ import {
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Home from './components/navigation/screens/Home';
-import ViewAll from './components/navigation/screens/ViewAll';
-import Podcasts from './components/navigation/screens/Podcasts';
-import AlbumInfo from './components/navigation/screens/AlbumInfo';
-import OnboardingScreen from './components/navigation/screens/onboarding';
-import EntPods from './components/navigation/screens/EntertainmentPodcasts';
+import Home from './components/screens/Home';
+import ViewAll from './components/screens/ViewAll';
+import Podcasts from './components/screens/Podcasts';
+import AlbumInfo from './components/screens/AlbumInfo';
+import OnboardingScreen from './components/screens/onboarding';
+import EntPods from './components/screens/EntertainmentPodcasts';
+import AudioPlayer from './components/screens/AudioPlayer';
+import StartStack from './components/navigation/StartStack';
+import PodcastStack from './components/navigation/PodcastStack';
 //import Test from './components/navigation/screens/test';
 
 const Stack = createNativeStackNavigator();
@@ -33,25 +36,13 @@ const App = () => {
       <Stack.Navigator>
         <Stack.Screen
           options={{headerShown: false}}
-          name="Onboarding"
-          component={OnboardingScreen}
+          name="Start"
+          component={StartStack}
         />
         <Stack.Screen
           options={{headerShown: false}}
-          name="Home"
-          component={Home}
-        />
-        <Stack.Screen name="View All" component={ViewAll} />
-        <Stack.Screen
-          name="Entertainment"
-          component={EntPods}
-          options={({route}) => ({title: route.params.genre})}
-        />
-        <Stack.Screen name="Podcasts" component={Podcasts} />
-        <Stack.Screen
-          name="Album"
-          component={AlbumInfo}
-          options={({route}) => ({title: route.params.item.name})}
+          name="Podcast"
+          component={PodcastStack}
         />
       </Stack.Navigator>
     </NavigationContainer>

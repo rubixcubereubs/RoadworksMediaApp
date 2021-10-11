@@ -146,7 +146,7 @@ const EntPods = ({route, navigation}) => {
                     type="feather"
                     onPress={checkPermission}
                   />
-                  <Avatar source={{uri: value.image}} />
+                  <Avatar source={{uri: 'https://picsum.photos/100'}} />
                   <ListItem.Content key={value.id}>
                     <ListItem.Title>{value.name}</ListItem.Title>
                     <ListItem.Subtitle>{value.artist}</ListItem.Subtitle>

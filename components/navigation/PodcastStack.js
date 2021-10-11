@@ -1,13 +1,11 @@
 import React from 'react';
 import {StatusBar} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
 import Home from '../screens/Home';
 import ViewAll from '../screens/ViewAll';
 import EntPods from '../screens/EntertainmentPodcasts';
 import Podcasts from '../screens/Podcasts';
 import AlbumInfo from '../screens/AlbumInfo';
-import {NavigationContainer} from '@react-navigation/native';
 import AudioPlayer from '../screens/AudioPlayer';
 
 const Stack = createNativeStackNavigator();

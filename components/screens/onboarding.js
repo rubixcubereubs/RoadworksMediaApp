@@ -7,12 +7,13 @@ const OnboardingScreen = ({navigation}) => {
   return (
     <Onboarding
       onDone={() => navigation.navigate('Podcast')}
+      onSkip={() => navigation.navigate('Podcast')}
       pages={[
         {
           backgroundColor: '#fff',
           image: (
             <Image
-              source={require('../../media/images/circle.jpg')}
+              source={{uri: 'https://picsum.photos/100'}}
               style={{width: '100%', height: '60%'}}
             />
           ),
@@ -23,7 +24,7 @@ const OnboardingScreen = ({navigation}) => {
           backgroundColor: '#fe6e58',
           image: (
             <Image
-              source={require('../../media/images/square.jpg')}
+              source={{uri: 'https://picsum.photos/100'}}
               style={{width: '100%', height: '60%'}}
             />
           ),
@@ -34,7 +35,7 @@ const OnboardingScreen = ({navigation}) => {
           backgroundColor: '#999',
           image: (
             <Image
-              source={require('../../media/images/triangle.jpg')}
+              source={{uri: 'https://picsum.photos/100'}}
               style={{width: '100%', height: '60%'}}
             />
           ),

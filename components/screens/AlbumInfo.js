@@ -28,34 +28,44 @@ const AlbumInfo = ({route, useState, useEffect}) => {
   const keyExtractor = (item, index) => index.toString();
 
   const renderItem = ({item}) => (
-    <ListItem bottomDivider>
+    <ListItem
+      bottomDivider
+      containerStyle={{marginTop: 5, marginBottom: 5, borderRadius: 200}}>
       <Text>{item.key + 1}</Text>
       <ListItem.Content>
         <ListItem.Title>{item.name}</ListItem.Title>
         <ListItem.Subtitle>{item.artist}</ListItem.Subtitle>
       </ListItem.Content>
-      <ListItem.Chevron />
+      <Icon name="ios-play-circle-outline" size={40} color="black" />
     </ListItem>
   );
   console.log('album: ', item);
+  const albumInfo = (
+    <ListItem containerStyle={{backgroundColor: 'black', opacity: 0.7}}>
+      <ListItem.Content>
+        <ListItem.Title style={{color: 'white'}}>{item.name}</ListItem.Title>
+        <ListItem.Subtitle style={{color: 'white'}}>
+          {item.artist}
+        </ListItem.Subtitle>
+      </ListItem.Content>
+      <TouchableOpacity style={{marginLeft: 'auto'}}>
+        <Icon
+          name="ios-play-circle-outline" //"ios-cloud-download-outline"
+          size={40}
+          color="white"
+          style={styles.seekButtons}
+        />
+      </TouchableOpacity>
+    </ListItem>
+  );
   return (
     <View>
       <Surface style={styles.surface}>
         <Image
-          source={require(`../../media/images/circle.jpg`)}
+          source={{uri: 'https://picsum.photos/100'}}
           style={{width: 390, height: 300}}
           PlaceholderContent={<ActivityIndicator />}>
-          <Text>{item.name}</Text>
-          <Text>{item.artist}</Text>
-          <Text>{item.image}</Text>
-          <TouchableOpacity>
-            <Icon
-              name="ios-cloud-download-outline"
-              size={30}
-              color="white"
-              style={styles.seekButtons}
-            />
-          </TouchableOpacity>
+          <View style={{marginTop: 'auto'}}>{albumInfo}</View>
         </Image>
       </Surface>
       <FlatList

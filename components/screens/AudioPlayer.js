@@ -14,11 +14,8 @@ import {
   Pressable,
 } from 'react-native';
 
-import {Modalize} from 'react-native-modalize';
-import {ListItem, Avatar, BottomSheet} from 'react-native-elements';
+import {ListItem, Avatar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
-import ProgressBar from 'react-native-progress/Bar';
-import {white} from 'react-native-paper/lib/typescript/styles/colors';
 import TrackPlayer, {
   State,
   useProgress,
@@ -41,15 +38,26 @@ const AudioPlayer = () => {
   //flag to check whether the use is sliding the seekbar or not
   const [isSeeking, setIsSeeking] = useState(false);
 
-  const songDetails = {
-    id: '1',
-    url: 'https://audio-previews.elements.envatousercontent.com/files/103682271/preview.mp3',
-    type: 'default',
-    title: 'My Title',
-    album: 'My Album',
-    artist: 'Rohan Bhatia',
-    artwork: 'https://picsum.photos/100',
-  };
+  const songDetails = [
+    {
+      id: '1',
+      url: 'https://audio-previews.elements.envatousercontent.com/files/103682271/preview.mp3',
+      type: 'default',
+      title: 'My Title',
+      album: 'My Album',
+      artist: 'Rohan Bhatia',
+      artwork: 'https://picsum.photos/100',
+    },
+    {
+      id: '2',
+      url: 'https://roadworksmediabackend.herokuapp.com/download', // Load media from the network
+      title: 'Avaritia',
+      artist: 'deadmau5',
+      album: 'while(1<2)',
+      genre: 'Progressive House, Electro House',
+      artwork: 'https://picsum.photos/100', // Load artwork from the network
+    },
+  ];
 
   const track = {
     id: '2',
@@ -61,7 +69,7 @@ const AudioPlayer = () => {
     artwork: 'https://picsum.photos/100', // Load artwork from the network
   };
 
-  const trackPlayerInit = async () => {
+  const TrackPlayerInit = async () => {
     await TrackPlayer.setupPlayer();
     TrackPlayer.updateOptions({
       stopWithApp: true,
@@ -79,7 +87,7 @@ const AudioPlayer = () => {
       ],
       compactCapabilities: [Capability.Play, Capability.Pause],
     });
-    await TrackPlayer.add([songDetails, track]);
+    await TrackPlayer.add(songDetails);
     const state = await TrackPlayer.getState();
     if (state === State.Playing) {
       console.log('The player is playing');
@@ -100,10 +108,11 @@ const AudioPlayer = () => {
     console.log(`First title: ${tracks[1].url}`);
     return true;
   };
+
   //initialize the TrackPlayer when the App component is mounted
   useEffect(() => {
     const startPlayer = async () => {
-      let isInit = await trackPlayerInit();
+      let isInit = await TrackPlayerInit();
       setIsTrackPlayerInit(isInit);
     };
     startPlayer();
@@ -231,30 +240,67 @@ const AudioPlayer = () => {
 
   StatusBar.setBarStyle('light-content');
 
-  const handleNextTrack = async () => {
-    //currentIndex + 1;
+  const [abc, setAbc] = useState({
+    id: '',
+    url: '',
+    type: 'default',
+    title: '',
+    album: '',
+    artist: '',
+    artwork: 'https://picsum.photos/100',
+  });
+  const [def, setDef] = useState();
+  useEffect(() => {
+    const handleNextTrack = async () => {
+      // get the id of the current track
+      let trackId = await TrackPlayer.getCurrentTrack();
+      setDef(trackId);
 
-    //console.log(currentIndex);
+      const tracks = await TrackPlayer.getQueue();
+      setAbc({
+        /* id: tracks[def].id,
+      type: 'default',*/
+        url: tracks[def].url,
+        title: tracks[def].title,
+        album: tracks[def].album,
+        artist: tracks[def].artist,
+        artwork: tracks[def].artwork,
+      });
+    };
+    handleNextTrack();
+  });
 
-    // setNextEpisode(currentIndex);
+  const aboutText = (
+    <Text style={{color: 'grey', height: 200}}>
+      This is some text about the Podcast...Lorem ipsum dolor sit amet,
+      consectetur adipiscing elit. Ut aliquet tellus tempus tempus tincidunt.
+      Suspendisse at lacinia magna. Donec ultricies libero eget varius dapibus.
+      Orci varius natoque penatibus et magnis dis parturient montes, nascetur
+      ridiculus mus. Praesent consequat, dolor non tristique sollicitudin, felis
+      magna iaculis ante, at pharetra metus diam placerat dolor. Class aptent
+      taciti sociosqu ad litora torquent per conubia nostra, per inceptos
+      himenaeos. Integer tortor diam, scelerisque ac leo vel, dapibus
+      consectetur urna. Phasellus ac enim tortor. Vestibulum in sem eu justo
+      aliquet condimentum nec quis quam. Proin auctor nunc quis tellus
+      convallis, finibus efficitur metus ornare. Cras eu velit at urna varius
+      interdum eget quis nunc. Etiam ac augue consectetur, venenatis nisi quis,
+      facilisis erat. Nam elementum tellus nec dapibus porttitor. Aliquam lorem
+      orci, placerat id blandit at, maximus ut nibh. Phasellus convallis enim ac
+      velit pellentesque, ut lacinia sem vulputate.
+    </Text>
+  );
 
-    // get the id of the current track
-    let trackId = await TrackPlayer.getCurrentTrack();
-
-    console.log('hmm ', trackId);
-  };
-  handleNextTrack();
   return (
     <View>
       <TouchableOpacity onPress={() => setIsVisible(true)}>
         <ListItem bottomDivider containerStyle={styles.miniPlayer}>
-          <Avatar source={{uri: songDetails.artwork}} />
+          <Avatar source={{uri: abc.artwork}} />
           <ListItem.Content>
             <ListItem.Title style={styles.miniPlayerText}>
-              {songDetails.title}
+              {abc.title}
             </ListItem.Title>
             <ListItem.Subtitle style={styles.miniPlayerText}>
-              {songDetails.artist}
+              {abc.artist}
             </ListItem.Subtitle>
           </ListItem.Content>
           <TouchableOpacity onPress={() => console.log('play/pause')}>
@@ -269,16 +315,18 @@ const AudioPlayer = () => {
               <Text>{closeButton}</Text>
 
               <View style={styles.insideContainer}>
-                <Image
-                  source={{uri: songDetails.artwork}}
-                  style={styles.image}
-                />
-
-                <View style={styles.audioInfo}>
-                  <Text style={styles.audioInfoTitle}>{songDetails.title}</Text>
-                  <Text style={styles.audioInfoArtist}>
-                    {songDetails.artist}
-                  </Text>
+                <View style={{flex: 1}}>
+                  <Image source={{uri: abc.artwork}} style={styles.image} />
+                </View>
+                <View style={styles.audioAllText}>
+                  <View style={styles.audioInfo}>
+                    <Text style={styles.audioInfoTitle}>{abc.title}</Text>
+                    <Text style={styles.audioInfoArtist}>{abc.artist}</Text>
+                  </View>
+                  <ScrollView style={styles.aboutText}>
+                    <Text style={{color: 'white', fontSize: 20}}>About</Text>
+                    {aboutText}
+                  </ScrollView>
                 </View>
                 <View>
                   <Text>
@@ -287,11 +335,11 @@ const AudioPlayer = () => {
                     {SeekBarTimeDuration}
                   </Text>
                 </View>
-                <View style={styles.audioButtons}>
+                <SafeAreaView style={styles.audioButtons}>
                   {rewindButton}
                   {playButton(60)}
                   {fastForwardButton}
-                </View>
+                </SafeAreaView>
               </View>
             </View>
           </View>
@@ -311,7 +359,7 @@ const styles = StyleSheet.create({
     //zIndex: 10,
   },
   insideContainer: {
-    //flex: 1,
+    flex: 1,
     //marginTop: StatusBar.currentHeight || 80,
     //justifyContent: 'center',
     alignItems: 'center',
@@ -336,14 +384,29 @@ const styles = StyleSheet.create({
 
   audioWhole: {
     marginTop: StatusBar.currentHeight || 60,
-  },
-  audioInfo: {
-    alignItems: 'flex-start',
-    //flex: 1,
+    flex: 1,
   },
 
+  audioAllText: {
+    flex: 1,
+    marginTop: 30,
+  },
+  audioInfo: {
+    //alignItems: 'flex-start',
+    //flex: 1,
+    //alignContent: 'flex-start',
+    //backgroundColor: 'red',
+    marginBottom: 5,
+  },
+  aboutText: {
+    //alignItems: 'flex-start',
+    //flex: 1,
+    //alignContent: 'flex-start',
+    //backgroundColor: 'grey',
+    //opacity: 0.7,
+  },
   audioInfoTitle: {
-    marginTop: 15,
+    //marginTop: 15,
     //marginBottom: 5,
     fontSize: 25,
     color: 'white',
@@ -351,14 +414,16 @@ const styles = StyleSheet.create({
   audioInfoArtist: {
     marginBottom: 5,
     fontSize: 15,
-    color: 'white',
+    color: 'grey',
   },
 
   image: {
     marginTop: 10,
+    //marginBottom: 500,
     width: 300,
     height: 300,
     //left: '50%',
+    borderRadius: 200,
   },
   closeButton: {
     marginTop: StatusBar.currentHeight || 0,

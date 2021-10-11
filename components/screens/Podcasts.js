@@ -11,7 +11,7 @@ import {
   StatusBar,
 } from 'react-native';
 import {Surface} from 'react-native-paper';
-import {Button} from 'react-native-elements';
+import {Button, Image} from 'react-native-elements';
 import AudioPlayer from './AudioPlayer';
 
 const DATA = [
@@ -78,7 +78,7 @@ const Podcasts = ({navigation, route}) => {
         result => {
           setPodcastsLoaded(true);
           setPodcasts(result);
-          console.log('api', result);
+          //console.log('api', result);
         },
 
         error => {
@@ -114,7 +114,7 @@ const Podcasts = ({navigation, route}) => {
   }));
   const numbers = [1, 2, 3, 4, 5];
   const doubled = numbers.map(number => number * 2);
-  console.log(doubled);
+  //console.log(doubled);
 
   const checked = podcasts.map(number => number.tracks);
 
@@ -124,7 +124,7 @@ const Podcasts = ({navigation, route}) => {
 
   const check = Object.keys(podcasts).map(key => podcasts[key]);
   const con = Object.keys(check).map(key => check[key]);
-  console.log('pod', latestPodcasts.slice(0, latestPodcasts.length / 4));
+  //console.log('pod', latestPodcasts.slice(0, latestPodcasts.length / 4));
 
   //const check = checked.map(numb => numb);
   //console.log('check', check);
@@ -138,10 +138,15 @@ const Podcasts = ({navigation, route}) => {
   });*/
 
   //console.log('lot:', latest);
-
+  const pic = 'https://picsum.photos/100';
   const Item = ({item, onPress, backgroundColor, textColor}) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-      <Surface style={{padding: 20}}>
+      <Surface style={{padding: 2}}>
+        <Image
+          source={{uri: pic}}
+          style={{width: 150, height: 200}}
+          PlaceholderContent={<ActivityIndicator />}
+        />
         <Text style={[styles.title, textColor]}>{item.name}</Text>
       </Surface>
     </TouchableOpacity>
@@ -186,7 +191,7 @@ const Podcasts = ({navigation, route}) => {
       );
     }
   };
-  console.log('ent: ', entertainmentAlbums);
+  //console.log('ent: ', entertainmentAlbums);
   const renderEduItem = ({item}) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
     const color = item.id === selectedId ? 'red' : 'black';
@@ -222,6 +227,7 @@ const Podcasts = ({navigation, route}) => {
   return (
     <View style={styles.container}>
       {StatusBar.setBarStyle('light-content')}
+
       {podcastsLoaded ? (
         <View>
           <Surface style={styles.surface}>
@@ -233,7 +239,8 @@ const Podcasts = ({navigation, route}) => {
               </Text>
             ))}
           </Surface>
-          <ScrollView>
+
+          <ScrollView style={{marginBottom: 50}}>
             <View style={styles.subContainer}>
               <Text style={styles.albumListTitle}>Latest Podcasts</Text>
               <SafeAreaView style={styles.container}>
@@ -331,7 +338,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   title: {
-    fontSize: 32,
+    fontSize: 20,
   },
   surface: {
     padding: 8,

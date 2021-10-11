@@ -24,7 +24,7 @@ import BsCloudDownload from 'react-icons/bs';
 import {ListItem, Avatar} from 'react-native-elements';
 import {List} from 'react-native-paper';
 
-const ViewAll = () => {
+const ViewAll = ({navigation}) => {
   const [podcastsError, setPodcastsError] = useState(null);
   const [podcastsLoaded, setPodcastsLoaded] = useState(false);
   const [podcasts, setPodcasts] = useState([]);
@@ -167,13 +167,15 @@ const ViewAll = () => {
     return Object.entries(podcasts).map(([key, value]) => {
       return (
         <ScrollView key={key}>
-          <ListItem bottomDivider>
-            <Icon
-              raised
-              name="download"
-              type="feather"
-              onPress={checkPermission}
-            />
+          <ListItem
+            bottomDivider
+            containerStyle={{marginTop: 5, marginBottom: 5, borderRadius: 200}}
+            onPress={() =>
+              navigation.navigate('Album', {
+                item: value,
+                podcasts: podcasts,
+              })
+            }>
             <Avatar source={{uri: 'https://picsum.photos/100'}} />
             <ListItem.Content key={value.id}>
               <ListItem.Title>{value.name}</ListItem.Title>

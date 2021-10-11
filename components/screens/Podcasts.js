@@ -231,13 +231,7 @@ const Podcasts = ({navigation, route}) => {
       {podcastsLoaded ? (
         <View>
           <Surface style={styles.surface}>
-            {latestPodcasts.map(latest => (
-              <Text style={styles.surfaceText}>
-                {latest.tracks.map((track, i) => (
-                  <Text style={styles.surfaceText}>{track.name}</Text>
-                ))}
-              </Text>
-            ))}
+            <Text>Ad banner</Text>
           </Surface>
 
           <ScrollView style={{marginBottom: 50}}>

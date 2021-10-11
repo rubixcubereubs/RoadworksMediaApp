@@ -139,13 +139,13 @@ const EntPods = ({route, navigation}) => {
                 })
               }>
               <ScrollView key={key}>
-                <ListItem bottomDivider>
-                  <Icon
-                    raised
-                    name="download"
-                    type="feather"
-                    onPress={checkPermission}
-                  />
+                <ListItem
+                  bottomDivider
+                  containerStyle={{
+                    marginTop: 5,
+                    marginBottom: 5,
+                    borderRadius: 200,
+                  }}>
                   <Avatar source={{uri: 'https://picsum.photos/100'}} />
                   <ListItem.Content key={value.id}>
                     <ListItem.Title>{value.name}</ListItem.Title>

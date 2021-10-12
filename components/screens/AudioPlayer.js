@@ -16,6 +16,7 @@ import {
 
 import {ListItem, Avatar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
+import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import TrackPlayer, {
   State,
   useProgress,
@@ -129,12 +130,19 @@ const AudioPlayer = () => {
     TrackPlayer.skipToNext();
     setIsPlaying(true);
   };
+  const onSeekForward = () => {
+    TrackPlayer.seekTo(position + 10);
+    //setIsPlaying(true);
+  };
 
   const onPrevButtonPressed = () => {
     TrackPlayer.skipToPrevious();
     setIsPlaying(true);
   };
-
+  const onSeekBackwards = () => {
+    TrackPlayer.seekTo(position - 10);
+    //setIsPlaying(true);
+  };
   //useTrackPlayerProgress is a hook which provides the current position and duration of the track player.
   //These values will update every 250ms
   const position = useProgress().position;
@@ -172,7 +180,9 @@ const AudioPlayer = () => {
   };
 
   const playButton = iconSize => (
-    <TouchableOpacity onPress={onPlayButtonPressed}>
+    <TouchableOpacity
+      style={styles.buttonMargins}
+      onPress={onPlayButtonPressed}>
       {isPlaying ? (
         <Icon name="ios-pause-circle-outline" size={iconSize} color="white" />
       ) : (
@@ -181,7 +191,9 @@ const AudioPlayer = () => {
     </TouchableOpacity>
   );
   const rewindButton = (
-    <TouchableOpacity onPress={onPrevButtonPressed}>
+    <TouchableOpacity
+      style={styles.buttonMargins}
+      onPress={onPrevButtonPressed}>
       <Icon
         name="ios-play-skip-back-circle-outline"
         size={30}
@@ -190,11 +202,33 @@ const AudioPlayer = () => {
       />
     </TouchableOpacity>
   );
+  const stepRewindButton = (
+    <TouchableOpacity style={styles.buttonMargins} onPress={onSeekBackwards}>
+      <IconMC
+        name="rewind-10"
+        size={30}
+        color="white"
+        style={styles.seekButtons}
+      />
+    </TouchableOpacity>
+  );
 
   const fastForwardButton = (
-    <TouchableOpacity onPress={onNextButtonPressed}>
+    <TouchableOpacity
+      style={styles.buttonMargins}
+      onPress={onNextButtonPressed}>
       <Icon
         name="ios-play-skip-forward-circle-outline"
+        size={30}
+        color="white"
+        style={styles.seekButtons}
+      />
+    </TouchableOpacity>
+  );
+  const stepFastForwardButton = (
+    <TouchableOpacity style={styles.buttonMargins} onPress={onSeekForward}>
+      <IconMC
+        name="fast-forward-10"
         size={30}
         color="white"
         style={styles.seekButtons}
@@ -336,9 +370,11 @@ const AudioPlayer = () => {
                   </Text>
                 </View>
                 <SafeAreaView style={styles.audioButtons}>
+                  {stepRewindButton}
                   {rewindButton}
                   {playButton(60)}
                   {fastForwardButton}
+                  {stepFastForwardButton}
                 </SafeAreaView>
               </View>
             </View>
@@ -352,7 +388,7 @@ const AudioPlayer = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
+    marginTop: 0, // || StatusBar.currentHeight,
     backgroundColor: 'black',
     //justifyContent: 'center',
     //alignItems: 'center',
@@ -415,6 +451,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize: 15,
     color: 'grey',
+  },
+
+  buttonMargins: {
+    marginLeft: 10,
+    marginRight: 10,
   },
 
   image: {

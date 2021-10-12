@@ -9,6 +9,14 @@ module.exports = async function () {
     TrackPlayer.pause();
   });
 
+  TrackPlayer.addEventListener('remote-next', () => {
+    TrackPlayer.skipToNext();
+  });
+
+  TrackPlayer.addEventListener('remote-previous', () => {
+    TrackPlayer.skipToPrevious();
+  });
+
   TrackPlayer.addEventListener('remote-jump-forward', async () => {
     let newPosition = await TrackPlayer.getPosition();
     let duration = await TrackPlayer.getDuration();

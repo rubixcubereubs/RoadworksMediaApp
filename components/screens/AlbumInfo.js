@@ -10,6 +10,7 @@ import {
 import {Surface} from 'react-native-paper';
 import {ListItem, Avatar, Image} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const AlbumInfo = ({route, useState, useEffect}) => {
   const [item] = [route.params.item];
@@ -30,7 +31,13 @@ const AlbumInfo = ({route, useState, useEffect}) => {
   const renderItem = ({item}) => (
     <ListItem
       bottomDivider
-      containerStyle={{marginTop: 5, marginBottom: 5, borderRadius: 200}}>
+      containerStyle={{
+        marginTop: 5,
+        marginBottom: 5,
+        borderRadius: 200,
+        backgroundColor: 'white',
+        //opacity: 0.8,
+      }}>
       <Text>{item.key + 1}</Text>
       <ListItem.Content>
         <ListItem.Title>{item.name}</ListItem.Title>
@@ -39,7 +46,25 @@ const AlbumInfo = ({route, useState, useEffect}) => {
       <Icon name="ios-play-circle-outline" size={40} color="black" />
     </ListItem>
   );
-  console.log('album: ', item);
+  const albumDescription = (
+    <Text style={{color: 'grey'}}>
+      Some text about the album...Lorem ipsum dolor sit amet, consectetur
+      adipiscing elit. Ut aliquet tellus tempus tempus tincidunt. Suspendisse at
+      lacinia magna. Donec ultricies libero eget varius dapibus. Orci varius
+      natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+      Praesent consequat, dolor non tristique sollicitudin, felis magna iaculis
+      ante, at pharetra metus diam placerat dolor. Class aptent taciti sociosqu
+      ad litora torquent per conubia nostra, per inceptos himenaeos. Integer
+      tortor diam, scelerisque ac leo vel, dapibus consectetur urna. Phasellus
+      ac enim tortor. Vestibulum in sem eu justo aliquet condimentum nec quis
+      quam. Proin auctor nunc quis tellus convallis, finibus efficitur metus
+      ornare. Cras eu velit at urna varius interdum eget quis nunc. Etiam ac
+      augue consectetur, venenatis nisi quis, facilisis erat. Nam elementum
+      tellus nec dapibus porttitor. Aliquam lorem orci, placerat id blandit at,
+      maximus ut nibh. Phasellus convallis enim ac velit pellentesque, ut
+      lacinia sem vulputate.
+    </Text>
+  );
   const albumInfo = (
     <ListItem containerStyle={{backgroundColor: 'black', opacity: 0.7}}>
       <ListItem.Content>
@@ -68,6 +93,9 @@ const AlbumInfo = ({route, useState, useEffect}) => {
           <View style={{marginTop: 'auto'}}>{albumInfo}</View>
         </Image>
       </Surface>
+      <ScrollView style={{height: 120, marginTop: 5}}>
+        {albumDescription}
+      </ScrollView>
       <FlatList
         keyExtractor={keyExtractor}
         data={trackItem}

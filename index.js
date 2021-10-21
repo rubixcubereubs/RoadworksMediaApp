@@ -8,5 +8,6 @@ import {name as appName} from './app.json';
 import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 import TrackPlayer from 'react-native-track-player';
 
-AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));
+AppRegistry.registerComponent(appName, () => App);
+//AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(App));
 TrackPlayer.registerPlaybackService(() => require('./service.js'));

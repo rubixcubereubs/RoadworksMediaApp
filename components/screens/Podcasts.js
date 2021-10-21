@@ -13,6 +13,9 @@ import {
 import {Surface} from 'react-native-paper';
 import {Button, Image} from 'react-native-elements';
 import AudioPlayer from './AudioPlayer';
+import {useDispatch, useSelector} from 'react-redux';
+import * as actions from '../redux/actions/actions';
+import store from '../redux/store/store';
 
 const DATA = [
   {
@@ -59,17 +62,24 @@ const DATA2 = [
 
 const Podcasts = ({navigation, route}) => {
   const [selectedId, setSelectedId] = useState(null);
-  const [tracks, setTracks] = useState([]);
+  /*const [tracks, setTracks] = useState([]);
   const [educationAlbums, setEducationAlbums] = useState([]);
   const [entertainmentAlbums, setEntertainmentAlbums] = useState([]);
   //const [podcasts] = [route.params.podcasts];
-  const [podcastsError, setPodcastsError] = useState(null);
+  //const [podcastsError, setPodcastsError] = useState(null);
   const [podcastsLoaded, setPodcastsLoaded] = useState(false);
-  const [podcasts, setPodcasts] = useState([]);
+  //const [podcasts, setPodcasts] = useState([]);*/
 
   const localhost = 'http://192.168.1.225:8080';
   const api = 'https://roadworksmediabackend.herokuapp.com';
-  useEffect(() => {
+
+  /*useEffect(() => {
+    dispatch(getPodcasts());
+  }, []);*/
+
+  const dispatch = useDispatch();
+
+  /* useEffect(() => {
     fetch(`${api}/albums`)
       .then(res => {
         return res.json();
@@ -87,8 +97,42 @@ const Podcasts = ({navigation, route}) => {
           console.log('error: ', error);
         },
       );
+  }, []);*/
+
+  useEffect(() => {
+    fetch(`${api}/albums`)
+      .then(res => {
+        return res.json();
+      })
+      .then(
+        result => {
+          dispatch(actions.fetchPodcastsRequest(true));
+          dispatch(actions.fetchPodcastsSuccess(result));
+          dispatch(actions.fetchPodcastsRequest(false));
+          //console.log('api', result);
+        },
+
+        error => {
+          dispatch(actions.fetchPodcastsRequest(true));
+          dispatch(actions.fetchPodcastsFailure(error));
+          console.log('error: ', error);
+        },
+      );
   }, []);
-  const latestPodcasts = Object.entries(podcasts).map(([key, value]) => ({
+
+  /*useEffect(() => {
+    getPodcasts();
+  }, []);*/
+
+  // console.log('props: ', this.props.podcastData);
+  //console.log('audio', audioPlayer);
+  const reduxPods = useSelector(state => state.podcasts);
+  const thePodcasts = reduxPods.reduxPodcasts;
+  const podcastsLoaded = reduxPods.loading;
+  console.log('abc', thePodcasts);
+  console.log('state: ', store.getState());
+
+  const latestPodcasts = Object.entries(thePodcasts).map(([key, value]) => ({
     name: value.name,
     artist: value.artist,
     image: value.image,
@@ -96,7 +140,7 @@ const Podcasts = ({navigation, route}) => {
     tracks: value.tracks,
     tag: value.tags,
   }));
-  const entPodcasts = Object.entries(podcasts).map(([key, value]) => ({
+  const entPodcasts = Object.entries(thePodcasts).map(([key, value]) => ({
     name: value.name,
     artist: value.artist,
     image: value.image,
@@ -104,7 +148,7 @@ const Podcasts = ({navigation, route}) => {
     tracks: value.tracks,
     tag: value.tags,
   }));
-  const eduPodcasts = Object.entries(podcasts).map(([key, value]) => ({
+  const eduPodcasts = Object.entries(thePodcasts).map(([key, value]) => ({
     name: value.name,
     artist: value.artist,
     image: value.image,
@@ -116,14 +160,14 @@ const Podcasts = ({navigation, route}) => {
   const doubled = numbers.map(number => number * 2);
   //console.log(doubled);
 
-  const checked = podcasts.map(number => number.tracks);
+  //const checked = podcasts.map(number => number.tracks);
 
-  const latestPodcast = Object.entries(podcasts).map(([key, value]) => {
+  /*const latestPodcast = Object.entries(podcasts).map(([key, value]) => {
     return value.tracks;
   });
 
   const check = Object.keys(podcasts).map(key => podcasts[key]);
-  const con = Object.keys(check).map(key => check[key]);
+  const con = Object.keys(check).map(key => check[key]);*/
   //console.log('pod', latestPodcasts.slice(0, latestPodcasts.length / 4));
 
   //const check = checked.map(numb => numb);
@@ -161,7 +205,7 @@ const Podcasts = ({navigation, route}) => {
         onPress={() =>
           navigation.navigate('Album', {
             item: item,
-            podcasts: podcasts,
+            podcasts: thePodcasts,
           })
         }
         backgroundColor={{backgroundColor}}
@@ -182,7 +226,7 @@ const Podcasts = ({navigation, route}) => {
           onPress={() =>
             navigation.navigate('Album', {
               item: item,
-              podcasts: podcasts,
+              podcasts: thePodcasts,
             })
           }
           backgroundColor={{backgroundColor}}
@@ -202,7 +246,7 @@ const Podcasts = ({navigation, route}) => {
           onPress={() =>
             navigation.navigate('Album', {
               item: item,
-              podcasts: podcasts,
+              podcasts: thePodcasts,
             })
           }
           backgroundColor={{backgroundColor}}
@@ -273,7 +317,7 @@ const Podcasts = ({navigation, route}) => {
                 raised
                 onPress={() =>
                   navigation.navigate('Entertainment', {
-                    albums: podcasts,
+                    albums: thePodcasts,
                     albumType: 'ent',
                     genre: 'Entertainment',
                   })
@@ -297,7 +341,7 @@ const Podcasts = ({navigation, route}) => {
                 raised
                 onPress={() =>
                   navigation.navigate('Entertainment', {
-                    albums: podcasts,
+                    albums: thePodcasts,
                     albumType: 'edu',
                     genre: 'Education',
                   })

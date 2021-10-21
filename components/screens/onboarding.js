@@ -13,19 +13,19 @@ const OnboardingScreen = ({navigation}) => {
           backgroundColor: '#fff',
           image: (
             <Image
-              source={{uri: 'https://picsum.photos/100'}}
-              style={{width: '100%', height: '60%'}}
+              source={{uri: 'https://picsum.photos/300'}}
+              style={{width: 350, height: 350, borderRadius: 500}}
             />
           ),
           title: 'Onboarding',
-          subtitle: 'Done with React Native Onboarding Swiper',
+          subtitle: 'This is the intro screens for the app',
         },
         {
           backgroundColor: '#fe6e58',
           image: (
             <Image
-              source={{uri: 'https://picsum.photos/100'}}
-              style={{width: '100%', height: '60%'}}
+              source={{uri: 'https://picsum.photos/300'}}
+              style={{width: 350, height: 350, borderRadius: 500}}
             />
           ),
           title: 'The Title',
@@ -35,11 +35,11 @@ const OnboardingScreen = ({navigation}) => {
           backgroundColor: '#999',
           image: (
             <Image
-              source={{uri: 'https://picsum.photos/100'}}
-              style={{width: '100%', height: '60%'}}
+              source={{uri: 'https://picsum.photos/300'}}
+              style={{width: 350, height: 350, borderRadius: 500}}
             />
           ),
-          title: 'Triangle',
+          title: 'Circle',
           subtitle: "Beautiful, isn't it?",
         },
       ]}

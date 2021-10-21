@@ -11,13 +11,18 @@ import {Surface} from 'react-native-paper';
 import {ListItem, Avatar, Image} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {ScrollView} from 'react-native-gesture-handler';
+import {useDispatch} from 'react-redux';
+import {addTracks, isPlaying, isVisible} from '../redux/actions/actions';
+import store from '../redux/store/store';
+import TrackPlayer from 'react-native-track-player';
 
 const AlbumInfo = ({route, useState, useEffect}) => {
   const [item] = [route.params.item];
   const [podcasts] = [route.params.podcasts];
 
+  const dispatch = useDispatch();
   const trackItem = Object.entries(item.tracks).map(([key, value]) => ({
-    name: value.name,
+    name: value.title,
     artist: value.artist,
     image: value.image,
     id: value.id,
@@ -65,6 +70,33 @@ const AlbumInfo = ({route, useState, useEffect}) => {
       lacinia sem vulputate.
     </Text>
   );
+  //const playTracks = ;
+  //const playTracks = TrackPlayer.add(item.tracks);
+  //const playTracks = TrackPlayer.reset();
+  //const playTracks = console.log('whyyyyyyyyyyyyyyyyyyyy');
+  /*const update = async () => {
+    await TrackPlayer.reset();
+    await TrackPlayer.add(item.tracks);
+    return true;
+  };*/
+  const first = () => {
+    //console.log(item);
+    dispatch(isVisible(true));
+    TrackPlayer.setupPlayer();
+    TrackPlayer.reset();
+    dispatch(addTracks(item.tracks));
+    dispatch(isPlaying(false));
+    //TrackPlayer.play();
+  };
+  const addItem = async => {
+    const promised = new Promise((resolve, reject) => {
+      resolve(TrackPlayer.reset(), store.dispatch(addTracks(item.tracks)));
+    });
+    promised().then(() => {
+      TrackPlayer.play();
+    });
+  };
+
   const albumInfo = (
     <ListItem containerStyle={{backgroundColor: 'black', opacity: 0.7}}>
       <ListItem.Content>
@@ -73,7 +105,7 @@ const AlbumInfo = ({route, useState, useEffect}) => {
           {item.artist}
         </ListItem.Subtitle>
       </ListItem.Content>
-      <TouchableOpacity style={{marginLeft: 'auto'}}>
+      <TouchableOpacity style={{marginLeft: 'auto'}} onPress={first}>
         <Icon
           name="ios-play-circle-outline" //"ios-cloud-download-outline"
           size={40}

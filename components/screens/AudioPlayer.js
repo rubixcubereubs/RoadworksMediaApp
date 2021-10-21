@@ -14,6 +14,7 @@ import {
   Pressable,
 } from 'react-native';
 
+import {useSelector, useDispatch, connect} from 'react-redux';
 import {ListItem, Avatar} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -28,18 +29,64 @@ import TrackPlayer, {
 //import {useTrackPlayerProgress} from 'react-native-track-player';
 //import statement for slider
 import Slider from '@react-native-community/slider';
+import * as actions from '../redux/actions/actions';
+import store from '../redux/store/store';
 
 const AudioPlayer = () => {
+  const dispatch = useDispatch();
+  const audioState = useSelector(state => state.audioPlayer);
+  const playingState = audioState.isPlaying;
+  const visibleState = store.getState().audioPlayer.isVisible;
+  //console.log('yyyyy ', playingState);
+  const seekingState = store.getState().audioPlayer.isSeeking;
+  const sliderState = audioState.sliderValue;
+  const trackList = store.getState().tracks;
+
+  //const trackList = store.getState().tracks;
+  //console.log('track: ', trackList);
+  //const songList = useSelector(state => state.audioPlayer.songDetails);
+  //const songList = store.getState().audioPlayer.songDetails;
+  /*const audioPlayer = useSelector(state => state.audioPlayer);
+  
+  const sliderState = useSelector(state => state.audioPlayer.sliderValue);
+  
+  
+  const seekingState = store.getState().audioPlayer.isSeeking;
+  const sliderState = store.getState().audioPlayer.sliderValue;
+  const playingState = store.getState().audioPlayer.isPlaying;
+  ;*/
   //state to manage whether track player is initialized or not
   const [isTrackPlayerInit, setIsTrackPlayerInit] = useState(false);
 
   //the value of the slider should be between 0 and 1
-  const [sliderValue, setSliderValue] = useState(0);
+  //const [sliderValue, setSliderValue] = useState(0);
 
   //flag to check whether the use is sliding the seekbar or not
-  const [isSeeking, setIsSeeking] = useState(false);
-
-  const songDetails = [
+  //const [isSeeking, setIsSeeking] = useState(false);
+  /*dispatch(
+    songDetails(
+      {
+        id: '1',
+        url: 'https://audio-previews.elements.envatousercontent.com/files/103682271/preview.mp3',
+        type: 'default',
+        title: 'My Title',
+        album: 'My Album',
+        artist: 'Rohan Bhatia',
+        artwork: 'https://picsum.photos/100',
+      },
+      {
+        id: '2',
+        url: 'https://roadworksmediabackend.herokuapp.com/download', // Load media from the network
+        title: 'Avaritia',
+        artist: 'deadmau5',
+        album: 'while(1<2)',
+        genre: 'Progressive House, Electro House',
+        artwork: 'https://picsum.photos/100', // Load artwork from the network
+      },
+    ),
+  );*/
+  //console.log(addTracks());
+  const songs = [
     {
       id: '1',
       url: 'https://audio-previews.elements.envatousercontent.com/files/103682271/preview.mp3',
@@ -60,56 +107,48 @@ const AudioPlayer = () => {
     },
   ];
 
-  const track = {
-    id: '2',
-    url: 'https://roadworksmediabackend.herokuapp.com/download', // Load media from the network
-    title: 'Avaritia',
-    artist: 'deadmau5',
-    album: 'while(1<2)',
-    genre: 'Progressive House, Electro House',
-    artwork: 'https://picsum.photos/100', // Load artwork from the network
-  };
+  useEffect(() => {
+    const TrackPlayerInit = async () => {
+      await TrackPlayer.setupPlayer();
+      TrackPlayer.updateOptions({
+        stopWithApp: true,
+        notificationCapabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.JumpForward,
+          Capability.JumpBackward,
+        ],
+        capabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.JumpForward,
+          Capability.JumpBackward,
+        ],
+        compactCapabilities: [Capability.Play, Capability.Pause],
+      });
+      await TrackPlayer.add(trackList);
+      const state = await TrackPlayer.getState();
+      if (state === State.Playing) {
+        console.log('The player is playing');
+      }
+      if (state === State.Paused) {
+        console.log('The player is paused');
+      }
 
-  const TrackPlayerInit = async () => {
-    await TrackPlayer.setupPlayer();
-    TrackPlayer.updateOptions({
-      stopWithApp: true,
-      notificationCapabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.JumpForward,
-        Capability.JumpBackward,
-      ],
-      capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.JumpForward,
-        Capability.JumpBackward,
-      ],
-      compactCapabilities: [Capability.Play, Capability.Pause],
-    });
-    await TrackPlayer.add(songDetails);
-    const state = await TrackPlayer.getState();
-    if (state === State.Playing) {
-      console.log('The player is playing');
-    }
-    if (state === State.Paused) {
-      console.log('The player is paused');
-    }
+      let trackIndex = await TrackPlayer.getCurrentTrack();
+      //let trackObject = await TrackPlayer.getTrack(trackIndex);
 
-    let trackIndex = await TrackPlayer.getCurrentTrack();
-    let trackObject = await TrackPlayer.getTrack(trackIndex);
+      //console.log(`Title: ${trackObject.title}`);
 
-    console.log(`Title: ${trackObject.title}`);
-
-    const position = await TrackPlayer.getPosition();
-    const duration = await TrackPlayer.getDuration();
-    console.log(`${duration - position} seconds left.`);
-    const tracks = await TrackPlayer.getQueue();
-    console.log(`First title: ${tracks[1].url}`);
-    return true;
-  };
-
+      const position = await TrackPlayer.getPosition();
+      const duration = await TrackPlayer.getDuration();
+      console.log(`${duration - position} seconds left.`);
+      const tracks = await TrackPlayer.getQueue();
+      console.log(`First title: ${tracks[1].url}`);
+      return true;
+    };
+    TrackPlayerInit();
+  }, [trackList]);
   //initialize the TrackPlayer when the App component is mounted
   useEffect(() => {
     const startPlayer = async () => {
@@ -119,16 +158,18 @@ const AudioPlayer = () => {
     startPlayer();
   }, [position, duration]);
 
+  //console.log(playingState);
+
   //start playing the TrackPlayer when the button is pressed
   const onPlayButtonPressed = () => {
-    isPlaying
-      ? (setIsPlaying(false), TrackPlayer.pause())
-      : (setIsPlaying(true), TrackPlayer.play());
+    playingState
+      ? (dispatch(actions.isPlaying(false)), TrackPlayer.pause())
+      : (dispatch(actions.isPlaying(true)), TrackPlayer.play());
   };
 
   const onNextButtonPressed = () => {
     TrackPlayer.skipToNext();
-    setIsPlaying(true);
+    dispatch(actions.isPlaying(true));
   };
   const onSeekForward = () => {
     TrackPlayer.seekTo(position + 10);
@@ -137,7 +178,7 @@ const AudioPlayer = () => {
 
   const onPrevButtonPressed = () => {
     TrackPlayer.skipToPrevious();
-    setIsPlaying(true);
+    dispatch(actions.isPlaying(true));
   };
   const onSeekBackwards = () => {
     TrackPlayer.seekTo(position - 10);
@@ -151,20 +192,21 @@ const AudioPlayer = () => {
 
   //this hook updates the value of the slider whenever the current position of the song changes
   useEffect(() => {
-    if (!isSeeking && position && duration) {
-      setSliderValue(position / duration);
+    if (!seekingState && position && duration) {
+      dispatch(actions.sliderValue(position / duration));
     }
   }, [position, duration]);
 
   //this function is called when the user starts to slide the seekbar
   const slidingStarted = () => {
-    setIsSeeking(true);
+    dispatch(actions.isSeeking(true));
   };
   //this function is called when the user stops sliding the seekbar
   const slidingCompleted = async value => {
     await TrackPlayer.seekTo(value * duration);
-    setSliderValue(value);
-    setIsSeeking(false);
+    //setSliderValue(value);
+    dispatch(actions.sliderValue(value));
+    dispatch(actions.isSeeking(false));
   };
 
   const modalizeRef = useRef(null);
@@ -172,18 +214,14 @@ const AudioPlayer = () => {
   const onOpen = () => {
     modalizeRef.current?.open();
   };
-  const [isVisible, setIsVisible] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const mytest = () => {
-    isPlaying ? setIsPlaying(false) : setIsPlaying(true);
-  };
+  //const [isVisible, setIsVisible] = useState(false);
+  //const [isPlaying, setIsPlaying] = useState(false);
 
   const playButton = iconSize => (
     <TouchableOpacity
-      style={styles.buttonMargins}
+      //style={styles.buttonMargins}
       onPress={onPlayButtonPressed}>
-      {isPlaying ? (
+      {playingState ? (
         <Icon name="ios-pause-circle-outline" size={iconSize} color="white" />
       ) : (
         <Icon name="ios-play-circle-outline" size={iconSize} color="white" />
@@ -235,7 +273,7 @@ const AudioPlayer = () => {
       />
     </TouchableOpacity>
   );
-
+  //console.log('slider: ', sliderState);
   const SeekBar = (
     /* <ProgressBar
       progress={0.3}
@@ -249,8 +287,8 @@ const AudioPlayer = () => {
     <Slider
       style={{width: 200, height: 40}}
       minimumValue={0}
-      maximumValue={1}
-      value={sliderValue}
+      maximumValue={duration}
+      value={position}
       minimumTrackTintColor="#FFFFFF"
       maximumTrackTintColor="#424242"
       onSlidingStart={slidingStarted}
@@ -267,7 +305,7 @@ const AudioPlayer = () => {
   );
 
   const closeButton = (
-    <TouchableOpacity onPress={() => setIsVisible(false)}>
+    <TouchableOpacity onPress={() => dispatch(actions.isVisible(false))}>
       <Icon name="ios-chevron-down-sharp" size={30} color="white" />
     </TouchableOpacity>
   );
@@ -326,7 +364,7 @@ const AudioPlayer = () => {
 
   return (
     <View>
-      <TouchableOpacity onPress={() => setIsVisible(true)}>
+      <TouchableOpacity onPress={() => dispatch(actions.isVisible(true))}>
         <ListItem bottomDivider containerStyle={styles.miniPlayer}>
           <Avatar source={{uri: abc.artwork}} />
           <ListItem.Content>
@@ -343,7 +381,7 @@ const AudioPlayer = () => {
         </ListItem>
       </TouchableOpacity>
       <View>
-        <Modal entry="bottom" visible={isVisible} animationType="slide">
+        <Modal entry="bottom" visible={visibleState} animationType="slide">
           <View style={styles.container}>
             <View style={styles.audioWhole}>
               <Text>{closeButton}</Text>

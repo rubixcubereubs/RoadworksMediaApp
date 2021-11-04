@@ -12,6 +12,16 @@ target 'RoadworksMediaApp' do
     :hermes_enabled => false
   )
 
+  # add pods for desired Firebase products
+  # https://firebase.google.com/docs/ios/setup#available-pods
+ 
+
+  # Add the pods for the Firebase products you want to use in your app
+  # For example, to use Firebase Authentication and Cloud Firestore
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Database'
+
 
   target 'RoadworksMediaAppTests' do
     inherit! :complete

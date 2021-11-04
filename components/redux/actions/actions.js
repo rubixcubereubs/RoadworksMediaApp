@@ -24,15 +24,17 @@ export const decrement = () => {
   };
 };
 
-export const sliderValue = () => {
+export const sliderValue = value => {
   return {
     type: SLIDER_VALUE,
+    payload: value,
   };
 };
 
-export const isSeeking = () => {
+export const isSeeking = value => {
   return {
     type: IS_SEEKING,
+    payload: value,
   };
 };
 

@@ -38,8 +38,8 @@ const AudioPlayer = () => {
   const playingState = audioState.isPlaying;
   const visibleState = store.getState().audioPlayer.isVisible;
   //console.log('yyyyy ', playingState);
-  const seekingState = store.getState().audioPlayer.isSeeking;
-  const sliderState = audioState.sliderValue;
+  //const seekingState = store.getState().audioPlayer.isSeeking;
+  //const sliderState = audioState.sliderValue;
   const trackList = store.getState().tracks;
 
   //const trackList = store.getState().tracks;
@@ -59,10 +59,10 @@ const AudioPlayer = () => {
   const [isTrackPlayerInit, setIsTrackPlayerInit] = useState(false);
 
   //the value of the slider should be between 0 and 1
-  //const [sliderValue, setSliderValue] = useState(0);
+  const [sliderValue, setSliderValue] = useState(0);
 
   //flag to check whether the use is sliding the seekbar or not
-  //const [isSeeking, setIsSeeking] = useState(false);
+  const [isSeeking, setIsSeeking] = useState(false);
   /*dispatch(
     songDetails(
       {
@@ -192,21 +192,21 @@ const AudioPlayer = () => {
 
   //this hook updates the value of the slider whenever the current position of the song changes
   useEffect(() => {
-    if (!seekingState && position && duration) {
-      dispatch(actions.sliderValue(position / duration));
+    if (!isSeeking && position && duration) {
+      setSliderValue(position / duration);
     }
   }, [position, duration]);
 
   //this function is called when the user starts to slide the seekbar
   const slidingStarted = () => {
-    dispatch(actions.isSeeking(true));
+    setIsSeeking(true);
   };
   //this function is called when the user stops sliding the seekbar
   const slidingCompleted = async value => {
     await TrackPlayer.seekTo(value * duration);
     //setSliderValue(value);
-    dispatch(actions.sliderValue(value));
-    dispatch(actions.isSeeking(false));
+    setSliderValue(value);
+    setIsSeeking(false);
   };
 
   const modalizeRef = useRef(null);
@@ -287,8 +287,8 @@ const AudioPlayer = () => {
     <Slider
       style={{width: 200, height: 40}}
       minimumValue={0}
-      maximumValue={duration}
-      value={position}
+      maximumValue={1}
+      value={sliderValue}
       minimumTrackTintColor="#FFFFFF"
       maximumTrackTintColor="#424242"
       onSlidingStart={slidingStarted}

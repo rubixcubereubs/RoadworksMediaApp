@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StatusBar,
+  RefreshControl,
 } from 'react-native';
 import {Surface} from 'react-native-paper';
 import {Button, Image} from 'react-native-elements';
@@ -16,50 +17,8 @@ import AudioPlayer from './AudioPlayer';
 import {useDispatch, useSelector} from 'react-redux';
 import * as actions from '../redux/actions/actions';
 import store from '../redux/store/store';
-
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
-const DATA1 = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28b',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f6',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d7',
-    title: 'Third Item',
-  },
-];
-const DATA2 = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d',
-    title: 'Third Item',
-  },
-];
-
+import {firebase} from '@react-native-firebase/database';
+import database from '@react-native-firebase/database';
 const Podcasts = ({navigation, route}) => {
   const [selectedId, setSelectedId] = useState(null);
   /*const [tracks, setTracks] = useState([]);
@@ -71,14 +30,82 @@ const Podcasts = ({navigation, route}) => {
   //const [podcasts, setPodcasts] = useState([]);*/
 
   const localhost = 'http://192.168.1.225:8080';
-  const api = 'https://roadworksmediabackend.herokuapp.com';
+  const api = 'https://roadworksmediabackend.herokuapp.com/albums';
+  const awsApi =
+    'https://roadworksmediatest.s3.eu-west-2.amazonaws.com/podcasts/audioMetadata/albums.json';
 
   /*useEffect(() => {
     dispatch(getPodcasts());
   }, []);*/
+  /*const database = firebase
+    .app()
+    .database(
+      'https://roadworksmediaapp-default-rtdb.europe-west1.firebasedatabase.app/',
+    )
+    .ref('/albums');*/
+
+  const firebasePodcasts = useEffect(() => {
+    firebase
+      .app()
+      .database(
+        'https://roadworksmediaapp-default-rtdb.europe-west1.firebasedatabase.app/',
+      )
+      .ref('/albums')
+      .once('value')
+      .then(snapshot => {
+        dispatch(actions.fetchPodcastsRequest(true));
+        dispatch(actions.fetchPodcastsSuccess(snapshot.val()));
+        dispatch(actions.fetchPodcastsRequest(false));
+        console.log('User data: ', snapshot.val());
+      });
+  }, []);
 
   const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = timeout => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  };
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000)
+      .then(() =>
+        firebase
+          .app()
+          .database(
+            'https://roadworksmediaapp-default-rtdb.europe-west1.firebasedatabase.app/',
+          )
+          .ref('/albums')
+          .once('value')
+          .then(snapshot => {
+            dispatch(actions.fetchPodcastsRequest(true));
+            dispatch(actions.fetchPodcastsSuccess(snapshot.val()));
+            dispatch(actions.fetchPodcastsRequest(false));
+            console.log('User data: ', snapshot.val());
+          }),
+      )
+      .then(() => setRefreshing(false));
+    /*fetch(`${awsApi}`)
+      .then(res => {
+        return res.json();
+      })
+      .then(
+        result => {
+          dispatch(actions.fetchPodcastsRequest(true));
+          dispatch(actions.fetchPodcastsSuccess(result));
+          dispatch(actions.fetchPodcastsRequest(false));
+          //console.log('api', result);
+        },
+
+        error => {
+          dispatch(actions.fetchPodcastsRequest(true));
+          dispatch(actions.fetchPodcastsFailure(error));
+          console.log('error: ', error);
+        },
+      );
+    firebasePodcasts;
+    setRefreshing(false);*/
+  }, []);
   /* useEffect(() => {
     fetch(`${api}/albums`)
       .then(res => {
@@ -100,7 +127,7 @@ const Podcasts = ({navigation, route}) => {
   }, []);*/
 
   useEffect(() => {
-    fetch(`${api}/albums`)
+    /*fetch(`${awsApi}`)
       .then(res => {
         return res.json();
       })
@@ -117,7 +144,8 @@ const Podcasts = ({navigation, route}) => {
           dispatch(actions.fetchPodcastsFailure(error));
           console.log('error: ', error);
         },
-      );
+      );*/
+    firebasePodcasts;
   }, []);
 
   /*useEffect(() => {
@@ -278,7 +306,15 @@ const Podcasts = ({navigation, route}) => {
             <Text>Ad banner</Text>
           </Surface>
 
-          <ScrollView style={{marginBottom: 50}}>
+          <ScrollView
+            style={{marginBottom: 50}}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="white"
+              />
+            }>
             <View style={styles.subContainer}>
               <Text style={styles.albumListTitle}>Latest Podcasts</Text>
               <SafeAreaView style={styles.container}>

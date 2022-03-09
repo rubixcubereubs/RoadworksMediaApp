@@ -12,8 +12,8 @@ import {ListItem, Avatar, Image} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useDispatch} from 'react-redux';
-import {addTracks, isPlaying, isVisible} from '../redux/actions/actions';
-import store from '../redux/store/store';
+import {addTracks, isPlaying, isVisible} from '../../redux/actions/actions';
+import store from '../../redux/store/store';
 import TrackPlayer from 'react-native-track-player';
 
 const AlbumInfo = ({route, useState, useEffect}) => {
@@ -24,33 +24,67 @@ const AlbumInfo = ({route, useState, useEffect}) => {
   const trackItem = Object.entries(item.tracks).map(([key, value]) => ({
     name: value.title,
     artist: value.artist,
-    image: value.image,
+    image: value.artwork,
     id: value.id,
-    trackUri: value.trackUri,
+    trackUri: value.url,
     tag: value.tags,
     key: parseInt(key, 10),
   }));
 
   const keyExtractor = (item, index) => index.toString();
 
-  const renderItem = ({item}) => (
-    <ListItem
-      bottomDivider
-      containerStyle={{
-        marginTop: 5,
-        marginBottom: 5,
-        borderRadius: 200,
-        backgroundColor: 'white',
-        //opacity: 0.8,
-      }}>
-      <Text>{item.key + 1}</Text>
-      <ListItem.Content>
-        <ListItem.Title>{item.name}</ListItem.Title>
-        <ListItem.Subtitle>{item.artist}</ListItem.Subtitle>
-      </ListItem.Content>
-      <Icon name="ios-play-circle-outline" size={40} color="black" />
-    </ListItem>
-  );
+  const renderItem = ({item}) => {
+    const playTrack = () => {
+      //console.log(item.tracks[i]);
+      //console.log('play track: ', trackItem);
+      //console.log('play item: ', item);
+      dispatch(isVisible(true));
+      TrackPlayer.setupPlayer();
+      TrackPlayer.reset();
+      dispatch(addTracks(item));
+      dispatch(isPlaying(false));
+      //TrackPlayer.play();
+    };
+    return (
+      <ListItem
+        bottomDivider
+        containerStyle={{
+          marginTop: 5,
+          marginBottom: 5,
+          borderRadius: 200,
+          backgroundColor: 'black',
+          //color: 'white',
+          //opacity: 0.8,
+        }}>
+        <Text style={{color: 'grey'}}>{item.key + 1}</Text>
+        <ListItem.Content>
+          <ListItem.Title style={{color: 'grey'}}>{item.name}</ListItem.Title>
+          <ListItem.Subtitle style={{color: 'grey'}}>
+            {item.artist}
+          </ListItem.Subtitle>
+        </ListItem.Content>
+        <Icon
+          name="ios-play-circle-outline"
+          size={40}
+          color="grey"
+          onPress={
+            //() => {
+            //console.log(item);
+            //dispatch(isVisible(true));
+            //TrackPlayer.setupPlayer();
+            //TrackPlayer.reset();
+            //dispatch(addTracks(item.tracks.track));
+            //dispatch(isPlaying(false));
+            //TrackPlayer.play();
+            //}
+            () => {
+              playTrackSingle(item.key);
+            }
+          }
+        />
+      </ListItem>
+    );
+  };
   const albumDescription = (
     <Text style={{color: 'grey'}}>
       Some text about the album...Lorem ipsum dolor sit amet, consectetur
@@ -79,12 +113,22 @@ const AlbumInfo = ({route, useState, useEffect}) => {
     await TrackPlayer.add(item.tracks);
     return true;
   };*/
-  const first = () => {
+  const playAlbum = () => {
     //console.log(item);
     dispatch(isVisible(true));
     TrackPlayer.setupPlayer();
     TrackPlayer.reset();
     dispatch(addTracks(item.tracks));
+    dispatch(isPlaying(false));
+    //TrackPlayer.play();
+  };
+  const playTrackSingle = i => {
+    //console.log(item.tracks[i]);
+    //console.log(item.tracks[i]);
+    dispatch(isVisible(true));
+    TrackPlayer.setupPlayer();
+    TrackPlayer.reset();
+    dispatch(addTracks(item.tracks[i]));
     dispatch(isPlaying(false));
     //TrackPlayer.play();
   };
@@ -96,16 +140,17 @@ const AlbumInfo = ({route, useState, useEffect}) => {
       TrackPlayer.play();
     });
   };
-
+  console.log(item);
   const albumInfo = (
     <ListItem containerStyle={{backgroundColor: 'black', opacity: 0.7}}>
       <ListItem.Content>
         <ListItem.Title style={{color: 'white'}}>{item.name}</ListItem.Title>
         <ListItem.Subtitle style={{color: 'white'}}>
           {item.artist}
+          {item.artwork}
         </ListItem.Subtitle>
       </ListItem.Content>
-      <TouchableOpacity style={{marginLeft: 'auto'}} onPress={first}>
+      <TouchableOpacity style={{marginLeft: 'auto'}} onPress={playAlbum}>
         <Icon
           name="ios-play-circle-outline" //"ios-cloud-download-outline"
           size={40}
@@ -115,23 +160,26 @@ const AlbumInfo = ({route, useState, useEffect}) => {
       </TouchableOpacity>
     </ListItem>
   );
+  const artworkChoice =
+    item.artwork == undefined ? 'https://picsum.photos/100' : item.artwork;
   return (
     <View>
       <Surface style={styles.surface}>
         <Image
-          source={{uri: 'https://picsum.photos/100'}}
-          style={{width: 390, height: 300}}
+          source={{uri: artworkChoice}}
+          style={{width: 390, height: 200}}
           PlaceholderContent={<ActivityIndicator />}>
           <View style={{marginTop: 'auto'}}>{albumInfo}</View>
         </Image>
       </Surface>
-      <ScrollView style={{height: 120, marginTop: 5}}>
+      <ScrollView style={{height: 120, marginTop: 0}}>
         {albumDescription}
       </ScrollView>
       <FlatList
         keyExtractor={keyExtractor}
         data={trackItem}
         renderItem={renderItem}
+        style={{marginBottom: 100}}
       />
     </View>
   );
@@ -141,7 +189,7 @@ export default AlbumInfo;
 const styles = StyleSheet.create({
   surface: {
     padding: 8,
-    height: 300,
+    height: 200,
     //width: 80,
     alignItems: 'center',
     justifyContent: 'center',

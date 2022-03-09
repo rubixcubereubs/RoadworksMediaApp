@@ -22,22 +22,37 @@ const ViewAll = ({navigation}) => {
 
   const ShowAllPodcasts = () => {
     return Object.entries(thePodcasts).map(([key, value]) => {
+      const artworkChoice =
+        value.artwork == undefined
+          ? 'https://picsum.photos/100'
+          : value.artwork;
       return (
         <ScrollView key={key}>
           <ListItem
             bottomDivider
-            containerStyle={{marginTop: 5, marginBottom: 5, borderRadius: 200}}
+            containerStyle={{
+              marginTop: 5,
+              marginBottom: 5,
+              borderRadius: 200,
+              backgroundColor: 'black',
+            }}
             onPress={() =>
               navigation.navigate('Album', {
                 item: value,
                 podcasts: thePodcasts,
               })
             }>
-            <Avatar source={{uri: 'https://picsum.photos/100'}} />
+            <Avatar source={{uri: artworkChoice}} />
             <ListItem.Content key={value.id}>
-              <ListItem.Title>{value.name}</ListItem.Title>
-              <ListItem.Subtitle>{value.artist}</ListItem.Subtitle>
-              <ListItem.Subtitle>{value.album}</ListItem.Subtitle>
+              <ListItem.Title style={{color: 'grey'}}>
+                {value.name}
+              </ListItem.Title>
+              <ListItem.Subtitle style={{color: 'grey'}}>
+                {value.artist}
+              </ListItem.Subtitle>
+              <ListItem.Subtitle style={{color: 'grey'}}>
+                {value.album}
+              </ListItem.Subtitle>
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem>

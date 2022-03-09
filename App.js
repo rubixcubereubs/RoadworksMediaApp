@@ -8,13 +8,15 @@ LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();*/
 import {Provider} from 'react-redux';
 import store from './components/redux/store/store';
-
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import MyTabs from './components/navigation/TabNavigator';
 //store
 //action
 //reducer
 //dispatch
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 const App = () => {
   return (
     <Provider store={store}>
@@ -25,10 +27,11 @@ const App = () => {
             name="Start"
             component={StartStack}
           />
+
           <Stack.Screen
             options={{headerShown: false}}
             name="Podcast"
-            component={PodcastStack}
+            component={MyTabs}
           />
         </Stack.Navigator>
       </NavigationContainer>

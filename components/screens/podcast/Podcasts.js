@@ -10,15 +10,17 @@ import {
   ActivityIndicator,
   StatusBar,
   RefreshControl,
+  ImageBackground,
 } from 'react-native';
 import {Surface} from 'react-native-paper';
-import {Button, Image} from 'react-native-elements';
+import {Button, Image, ListItem} from 'react-native-elements';
 import AudioPlayer from './AudioPlayer';
 import {useDispatch, useSelector} from 'react-redux';
-import * as actions from '../redux/actions/actions';
-import store from '../redux/store/store';
+import * as actions from '../../redux/actions/actions';
+import store from '../../redux/store/store';
 import {firebase} from '@react-native-firebase/database';
 import database from '@react-native-firebase/database';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 const Podcasts = ({navigation, route}) => {
   const [selectedId, setSelectedId] = useState(null);
   /*const [tracks, setTracks] = useState([]);
@@ -184,48 +186,23 @@ const Podcasts = ({navigation, route}) => {
     tracks: value.tracks,
     tag: value.tags,
   }));
-  const numbers = [1, 2, 3, 4, 5];
-  const doubled = numbers.map(number => number * 2);
-  //console.log(doubled);
 
-  //const checked = podcasts.map(number => number.tracks);
-
-  /*const latestPodcast = Object.entries(podcasts).map(([key, value]) => {
-    return value.tracks;
-  });
-
-  const check = Object.keys(podcasts).map(key => podcasts[key]);
-  const con = Object.keys(check).map(key => check[key]);*/
-  //console.log('pod', latestPodcasts.slice(0, latestPodcasts.length / 4));
-
-  //const check = checked.map(numb => numb);
-  //console.log('check', check);
-  /*const latestPodcast = podcasts.map(([key, value]) => {
-    console.log('inside 1st one:', value.tracks);
-  });
-  /*Object.entries(value).map(([i, track]) => ({
-      title: track.name,
-      id: track.id,
-    }));
-  });*/
-
-  //console.log('lot:', latest);
   const pic = 'https://picsum.photos/100';
   const Item = ({item, onPress, backgroundColor, textColor}) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
       <Surface style={{padding: 2}}>
         <Image
           source={{uri: pic}}
-          style={{width: 150, height: 200}}
+          style={{width: 100, height: 150}}
           PlaceholderContent={<ActivityIndicator />}
         />
-        <Text style={[styles.title, textColor]}>{item.name}</Text>
       </Surface>
+      <Text style={[styles.title, textColor]}>{item.name}</Text>
     </TouchableOpacity>
   );
   const renderItem = ({item}) => {
-    const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
-    const color = item.id === selectedId ? 'red' : 'black';
+    const backgroundColor = item.id === selectedId ? 'black' : 'black';
+    const color = item.id === selectedId ? 'white' : 'white';
 
     return (
       <Item
@@ -243,8 +220,8 @@ const Podcasts = ({navigation, route}) => {
   };
 
   const renderEntItem = ({item}) => {
-    const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
-    const color = item.id === selectedId ? 'red' : 'black';
+    const backgroundColor = item.id === selectedId ? 'black' : 'black';
+    const color = item.id === selectedId ? 'white' : 'white';
     if (item.tag == 'ent') {
       //setEntertainmentAlbums([...entertainmentAlbums, item]);
 
@@ -265,8 +242,8 @@ const Podcasts = ({navigation, route}) => {
   };
   //console.log('ent: ', entertainmentAlbums);
   const renderEduItem = ({item}) => {
-    const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
-    const color = item.id === selectedId ? 'red' : 'black';
+    const backgroundColor = item.id === selectedId ? 'black' : 'black';
+    const color = item.id === selectedId ? 'white' : 'white';
     if (item.tag == 'edu') {
       return (
         <Item
@@ -295,6 +272,13 @@ const Podcasts = ({navigation, route}) => {
       <Text>{track}</Text>
     </>
   );
+  const FeaturedPodcast = () => {
+    Object.entries(latestPodcasts).map(([key, value]) => {
+      if (key == 0) {
+        return <Text>{value.name}</Text>;
+      }
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -315,9 +299,54 @@ const Podcasts = ({navigation, route}) => {
                 tintColor="white"
               />
             }>
+            <View style={styles.featuredPodcast}>
+              {Object.entries(latestPodcasts).map(([key, value]) => {
+                if (key == 0) {
+                  return (
+                    <View>
+                      <ImageBackground
+                        source={{uri: pic}}
+                        style={{width: '100%', height: '100%'}}
+                        PlaceholderContent={<ActivityIndicator />}>
+                        <ListItem
+                          containerStyle={{
+                            backgroundColor: 'black',
+                            opacity: 0.7,
+                          }}>
+                          <ListItem.Content>
+                            <ListItem.Title style={{color: 'white'}}>
+                              {value.name}
+                            </ListItem.Title>
+                            <ListItem.Subtitle style={{color: 'white'}}>
+                              {value.artist}
+                            </ListItem.Subtitle>
+                          </ListItem.Content>
+                          <TouchableOpacity
+                            style={{marginLeft: 'auto'}}
+                            onPress={() =>
+                              navigation.navigate('Album', {
+                                item: value,
+                                podcasts: thePodcasts,
+                              })
+                            }>
+                            <Icon
+                              name="navigate-next" //"ios-cloud-download-outline"
+                              size={40}
+                              color="white"
+                              style={styles.seekButtons}
+                            />
+                          </TouchableOpacity>
+                        </ListItem>
+                        <Text>{value.name}</Text>
+                      </ImageBackground>
+                    </View>
+                  );
+                }
+              })}
+            </View>
             <View style={styles.subContainer}>
-              <Text style={styles.albumListTitle}>Latest Podcasts</Text>
               <SafeAreaView style={styles.container}>
+                <Text style={styles.albumListTitle}>Latest Podcasts</Text>
                 <FlatList
                   data={latestPodcasts.slice(0, latestPodcasts.length / 3)}
                   renderItem={renderItem}
@@ -327,18 +356,19 @@ const Podcasts = ({navigation, route}) => {
                   maxToRenderPerBatch={4}
                   horizontal
                 />
+                <Button
+                  title="View All"
+                  type="clear"
+                  raised
+                  onPress={() => navigation.navigate('View All')}
+                />
               </SafeAreaView>
-
-              <Button
-                title="View All"
-                type="clear"
-                raised
-                onPress={() => navigation.navigate('View All')}
-              />
             </View>
             <View style={styles.albumList}>
-              <Text style={styles.albumListTitle}>Entertainment Podcasts</Text>
               <SafeAreaView style={styles.container}>
+                <Text style={styles.albumListTitle}>
+                  Entertainment Podcasts
+                </Text>
                 <FlatList
                   data={entPodcasts.slice(0, latestPodcasts.length / 2)}
                   renderItem={renderEntItem}
@@ -346,23 +376,23 @@ const Podcasts = ({navigation, route}) => {
                   extraData={selectedId}
                   horizontal
                 />
+                <Button
+                  title="View All"
+                  type="clear"
+                  raised
+                  onPress={() =>
+                    navigation.navigate('viewGenre', {
+                      //albums: thePodcasts,
+                      albumType: 'ent',
+                      genre: 'Entertainment',
+                    })
+                  }
+                />
               </SafeAreaView>
-              <Button
-                title="View All"
-                type="clear"
-                raised
-                onPress={() =>
-                  navigation.navigate('Entertainment', {
-                    albums: thePodcasts,
-                    albumType: 'ent',
-                    genre: 'Entertainment',
-                  })
-                }
-              />
             </View>
             <View>
-              <Text style={styles.albumListTitle}>Educational Podcasts</Text>
               <SafeAreaView style={styles.container}>
+                <Text style={styles.albumListTitle}>Educational Podcasts</Text>
                 <FlatList
                   data={eduPodcasts.slice(0, latestPodcasts.length / 2)}
                   renderItem={renderEduItem}
@@ -370,19 +400,19 @@ const Podcasts = ({navigation, route}) => {
                   extraData={selectedId}
                   horizontal
                 />
+                <Button
+                  title="View All"
+                  type="clear"
+                  raised
+                  onPress={() =>
+                    navigation.navigate('viewGenre', {
+                      //podcasts: thePodcasts,
+                      albumType: 'edu',
+                      genre: 'Education',
+                    })
+                  }
+                />
               </SafeAreaView>
-              <Button
-                title="View All"
-                type="clear"
-                raised
-                onPress={() =>
-                  navigation.navigate('Entertainment', {
-                    albums: thePodcasts,
-                    albumType: 'edu',
-                    genre: 'Education',
-                  })
-                }
-              />
             </View>
           </ScrollView>
         </View>
@@ -405,7 +435,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 30,
   },
-
+  featuredPodcast: {
+    flex: 3,
+    //marginTop: 30,
+    height: 250,
+  },
   item: {
     //padding: 20,
     marginVertical: 20,

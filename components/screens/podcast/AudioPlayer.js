@@ -29,8 +29,8 @@ import TrackPlayer, {
 //import {useTrackPlayerProgress} from 'react-native-track-player';
 //import statement for slider
 import Slider from '@react-native-community/slider';
-import * as actions from '../redux/actions/actions';
-import store from '../redux/store/store';
+import * as actions from '../../redux/actions/actions';
+import store from '../../redux/store/store';
 
 const AudioPlayer = () => {
   const dispatch = useDispatch();
